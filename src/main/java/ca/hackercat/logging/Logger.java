@@ -1,23 +1,11 @@
 package ca.hackercat.logging;
 
-import ca.hackercat.magma.io.Terminal;
-
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 
 public final class Logger {
-    private static PrintStream out = new PrintStream(new OutputStream() {
-        @Override
-        public void write(int b) throws IOException {
-            System.out.write(b);
-            Terminal.out.write(b);
-        }
-    });
+    private static PrintStream out = System.out;
 
     private String className;
 
