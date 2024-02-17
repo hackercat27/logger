@@ -5,7 +5,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public final class Logger {
-    private static PrintStream out = System.out;
+
+    private enum Level {
+        INFO,
+        WARN,
+        ERROR
+    }
+
+    private static final PrintStream out = System.out;
 
     private String className;
 
@@ -16,9 +23,6 @@ public final class Logger {
 
     private static final String RESET = "\u001b[0m";
 
-    private static boolean disabled = false;
-
-
     private Logger(String className) {
         this.className = className;
     }
@@ -27,35 +31,40 @@ public final class Logger {
         return new Logger(clazz.getSimpleName());
     }
 
-    private enum Level {
-        INFO,
-        WARN,
-        ERROR
-    }
-
     public void log(Object o) {
         log(o.toString());
     }
     public void log(Throwable t) {
         log(t.toString() + "\n" + getStackTrace(t));
     }
+    public void logf(String format, Object... args) {
+        log(String.format(format, args));
+    }
     public void log(String msg) {
         print(Level.INFO, msg);
     }
+
     public void warn(Object o) {
         warn(o.toString());
     }
     public void warn(Throwable t) {
         warn(t.toString() + "\n" + getStackTrace(t));
     }
+    public void warnf(String format, Object... args) {
+        warn(String.format(format, args));
+    }
     public void warn(String msg) {
         print(Level.WARN, msg);
     }
+
     public void error(Object o) {
         error(o.toString());
     }
     public void error(Throwable t) {
         error(t.toString() + "\n" + getStackTrace(t));
+    }
+    public void errorf(String format, Object... args) {
+        error(String.format(format, args));
     }
     public void error(String msg) {
         print(Level.ERROR, msg);
@@ -72,8 +81,6 @@ public final class Logger {
     }
 
     private void print(Level level, String message) {
-        if (disabled)
-            return;
 
         String thread = Thread.currentThread().getName();
         String name = className;
@@ -117,11 +124,5 @@ public final class Logger {
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
     private String getTime() {
         return dtf.format(LocalDateTime.now());
-    }
-
-    public static void disableAllLoggers() {
-//        out.println(ERROR_COLOR + "DISABLING LOGGERS! This should ONLY be used for debugging " +
-//                "if a different logging API is using System.out, eg. the LWJGLX debugger.");
-        disabled = true;
     }
 }
